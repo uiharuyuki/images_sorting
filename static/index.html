@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>画像振り分けツール</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1>画像振り分けツール</h1>
+    <div class="path-row">
+      <input id="rootInput" type="text" placeholder="例: C:\Users\you\Pictures  または  /home/you/pics" autocomplete="off">
+      <button id="loadBtn">読み込み</button>
+    </div>
+    <div class="stats">
+      <span id="statTotal">画像: 0</span>
+      <span id="statKeep" class="keep">保存: 0</span>
+      <span id="statTrash" class="trash">削除: 0</span>
+      <button id="emptyTrashBtn" class="danger" title="_trash フォルダ内を完全削除">ゴミ箱を空にする</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-title">フォルダ</div>
+      <ul id="folderList" class="folder-list"></ul>
+    </aside>
+
+    <main class="main">
+      <div id="hint" class="hint">
+        操作: クリックで拡大 / <kbd>D</kbd> 削除 / <kbd>S</kbd> 保存 /
+        <kbd>←</kbd><kbd>→</kbd> 移動 / <kbd>Z</kbd> 直前の削除を取消
+      </div>
+      <div id="grid" class="grid"></div>
+      <div id="emptyMsg" class="empty-msg hidden">画像がありません。</div>
+    </main>
+  </div>
+
+  <!-- 拡大モーダル -->
+  <div id="modal" class="modal hidden">
+    <button class="modal-close" id="modalClose" title="閉じる (Esc)">×</button>
+    <button class="modal-nav prev" id="modalPrev" title="前へ (←)">‹</button>
+    <img id="modalImg" class="modal-img" alt="">
+    <button class="modal-nav next" id="modalNext" title="次へ (→)">›</button>
+    <div class="modal-info">
+      <span id="modalCaption"></span>
+      <span class="modal-actions">
+        <button id="modalKeep" class="keep">保存 (S)</button>
+        <button id="modalTrash" class="trash">削除 (D)</button>
+      </span>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
