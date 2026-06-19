@@ -1,12 +1,11 @@
 @echo off
-chcp 65001 >nul
 setlocal
 cd /d "%~dp0"
 
 set "PORT=8765"
 set "PYEXE="
 
-rem --- Python を探す（python / py の順）---
+rem --- Find Python (try python, then py) ---
 where python >nul 2>nul && set "PYEXE=python"
 if not defined PYEXE (
   where py >nul 2>nul && set "PYEXE=py"
@@ -14,24 +13,35 @@ if not defined PYEXE (
 
 if not defined PYEXE (
   echo.
-  echo [!] Python が見つかりませんでした。
-  echo     画像振り分けツールには Python 3 が必要です。
+  echo [ERROR] Python 3 was not found.
+  echo This tool requires Python 3.
   echo.
-  echo  インストール方法（いずれか）:
-  echo    1) https://www.python.org/downloads/ からインストール
-  echo    2) winget が使える場合は、この下のコメントを外して自動インストール
+  echo How to install:
+  echo   1^) Download from https://www.python.org/downloads/
+  echo   2^) During setup, check "Add python.exe to PATH"
   echo.
-  rem --- 自動インストールしたい場合は次の2行のコメント( rem )を外してください ---
-  rem echo  winget で Python をインストールします...
-  rem winget install -e --id Python.Python.3.12
+  echo If winget is available, you can also run:
+  echo   winget install -e --id Python.Python.3.12
   echo.
   pause
   exit /b 1
 )
 
-echo Python: %PYEXE%
-echo 画像振り分けツールを起動します...
+echo Using Python: %PYEXE%
+echo Starting the Image Triage server in a new window...
+start "Image Triage Server" %PYEXE% "%~dp0app.py"
+
+rem --- Wait a moment so the server is ready before opening the browser ---
+ping -n 3 127.0.0.1 >nul
+
+echo Opening browser at http://127.0.0.1:%PORT%/ ...
 start "" "http://127.0.0.1:%PORT%/"
-%PYEXE% "%~dp0app.py"
+
+echo.
+echo The server runs in the "Image Triage Server" window.
+echo Close that window to stop the server.
+echo If the browser shows "connection refused", wait a second and reload.
+echo.
+pause
 
 endlocal
