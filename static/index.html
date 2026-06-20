@@ -32,6 +32,13 @@
         操作: クリックで拡大 / <kbd>D</kbd> 削除 / <kbd>S</kbd> 保存 /
         <kbd>←</kbd><kbd>→</kbd> 移動 / <kbd>Z</kbd> 直前の削除を取消
       </div>
+      <div class="filterbar" id="filterBar">
+        <span class="filterbar-label">表示:</span>
+        <button class="filter-btn active" data-filter="all">すべて <span class="fc" id="fcAll">0</span></button>
+        <button class="filter-btn" data-filter="unsorted">未振り分け <span class="fc" id="fcUnsorted">0</span></button>
+        <button class="filter-btn keep" data-filter="keep">保存 <span class="fc" id="fcKeep">0</span></button>
+        <button class="filter-btn trash" data-filter="trash">削除 <span class="fc" id="fcTrash">0</span></button>
+      </div>
       <div id="grid" class="grid"></div>
       <div id="emptyMsg" class="empty-msg hidden">画像がありません。</div>
     </main>

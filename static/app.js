@@ -3,6 +3,7 @@
 const state = {
   root: "",
   scope: "all",
+  filter: "all",      // "all" | "unsorted" | "keep" | "trash"
   items: [],          // 現在表示中の画像 {rel, name, subdir, size, mtime}
   status: {},         // rel -> "keep" | "trash"
   focusIndex: -1,     // グリッド内のフォーカス位置
@@ -141,8 +142,40 @@ function renderGrid() {
     grid.appendChild(card);
   });
 
+  applyFilter();
   updateStats();
   focusCard(state.focusIndex);
+}
+
+// ---- フィルタ（保存／削除などで絞り込み）--------------------------------
+function matchesFilter(rel) {
+  const s = state.status[rel];
+  switch (state.filter) {
+    case "keep": return s === "keep";
+    case "trash": return s === "trash";
+    case "unsorted": return !s;
+    default: return true; // "all"
+  }
+}
+
+function applyFilter() {
+  state.items.forEach((item, idx) => {
+    const card = cardAt(idx);
+    if (card) card.classList.toggle("filtered-out", !matchesFilter(item.rel));
+  });
+  // 現在のフォーカスが非表示なら、表示中の先頭へ寄せる
+  if (state.focusIndex < 0 || !matchesFilter(state.items[state.focusIndex]?.rel)) {
+    const firstVisible = state.items.findIndex((it) => matchesFilter(it.rel));
+    focusCard(firstVisible);
+  }
+}
+
+function setFilter(filter) {
+  state.filter = filter;
+  document.querySelectorAll("#filterBar .filter-btn").forEach((b) => {
+    b.classList.toggle("active", b.dataset.filter === filter);
+  });
+  applyFilter();
 }
 
 function applyStatusClass(card, rel) {
@@ -173,9 +206,15 @@ function updateStats() {
     if (state.status[item.rel] === "keep") keep++;
     else if (state.status[item.rel] === "trash") trash++;
   }
-  $("statTotal").textContent = `画像: ${state.items.length}`;
+  const total = state.items.length;
+  $("statTotal").textContent = `画像: ${total}`;
   $("statKeep").textContent = `保存: ${keep}`;
   $("statTrash").textContent = `削除: ${trash}`;
+  // フィルタバーの件数
+  $("fcAll").textContent = total;
+  $("fcUnsorted").textContent = total - keep - trash;
+  $("fcKeep").textContent = keep;
+  $("fcTrash").textContent = trash;
 }
 
 // ---- 振り分け ------------------------------------------------------------
@@ -187,6 +226,7 @@ function markKeep(idx) {
   if (card) applyStatusClass(card, item.rel);
   updateStats();
   if (!state.modalOpen) moveFocus(1);
+  if (state.filter !== "all") applyFilter();
 }
 
 async function markTrash(idx) {
@@ -206,6 +246,7 @@ async function markTrash(idx) {
     } else {
       moveFocus(1);
     }
+    if (state.filter !== "all") applyFilter();
   } catch (e) {
     toast("削除失敗: " + e.message);
   }
@@ -224,6 +265,7 @@ async function undoTrash() {
       if (card) applyStatusClass(card, rel);
     }
     updateStats();
+    if (state.filter !== "all") applyFilter();
     toast("削除を取り消しました: " + rel);
   } catch (e) {
     toast("取消失敗: " + e.message);
@@ -232,8 +274,22 @@ async function undoTrash() {
 
 function moveFocus(delta) {
   if (!state.items.length) return;
-  let idx = state.focusIndex + delta;
-  idx = Math.max(0, Math.min(state.items.length - 1, idx));
+  const step = delta === 0 ? 0 : (delta > 0 ? 1 : -1);
+  let idx = state.focusIndex;
+  let remaining = Math.abs(delta);
+  // フィルタで非表示のカードは飛ばして、表示中のカードへフォーカスを移す
+  while (remaining > 0) {
+    let next = idx + step;
+    if (next < 0 || next >= state.items.length) break;
+    idx = next;
+    if (matchesFilter(state.items[idx].rel)) remaining--;
+  }
+  // 端で止まった場合に非表示カードへ乗らないよう、表示中の最寄りへ補正
+  if (!matchesFilter(state.items[idx]?.rel)) {
+    let j = idx;
+    while (j >= 0 && j < state.items.length && !matchesFilter(state.items[j].rel)) j += step || -1;
+    if (j >= 0 && j < state.items.length) idx = j;
+  }
   focusCard(idx);
 }
 
@@ -324,6 +380,10 @@ function escapeHtml(s) {
 $("loadBtn").addEventListener("click", loadRoot);
 $("rootInput").addEventListener("keydown", (e) => { if (e.key === "Enter") loadRoot(); });
 $("emptyTrashBtn").addEventListener("click", emptyTrash);
+$("filterBar").addEventListener("click", (e) => {
+  const btn = e.target.closest(".filter-btn");
+  if (btn) setFilter(btn.dataset.filter);
+});
 $("folderList").addEventListener("click", (e) => {
   const li = e.target.closest("li");
   if (!li) return;

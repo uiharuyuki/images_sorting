@@ -1,0 +1,12 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_CURRENT_USER\Software\Classes\imagesorting]
+@="URL:imagesorting Protocol"
+"URL Protocol"=""
+
+[HKEY_CURRENT_USER\Software\Classes\imagesorting\shell]
+
+[HKEY_CURRENT_USER\Software\Classes\imagesorting\shell\open]
+
+[HKEY_CURRENT_USER\Software\Classes\imagesorting\shell\open\command]
+@="\"B:\\yuki\\app\\my_app-tool\\my-tool\\images_sorting\\start.bat\" \"%1\""
