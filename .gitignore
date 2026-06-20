@@ -1,3 +1,6 @@
 __pycache__/
 *.pyc
 _trash/
+
+# ローカル用アップロードbat（公開しない）
+GitHubにアップロード.bat
