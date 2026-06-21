@@ -314,8 +314,14 @@ function renderModal() {
   $("modalCaption").textContent = `${state.modalIndex + 1}/${state.items.length}  ${item.rel}${tag}`;
 }
 function modalNav(delta) {
-  let idx = state.modalIndex + delta;
-  idx = Math.max(0, Math.min(state.items.length - 1, idx));
+  const step = delta >= 0 ? 1 : -1;
+  // フィルタ非該当（例: 未振り分けタブで振り分け済み）の画像は飛ばす
+  let idx = state.modalIndex;
+  let next = idx + step;
+  while (next >= 0 && next < state.items.length) {
+    if (matchesFilter(state.items[next].rel)) { idx = next; break; }
+    next += step;
+  }
   state.modalIndex = idx;
   state.focusIndex = idx;
   renderModal();
