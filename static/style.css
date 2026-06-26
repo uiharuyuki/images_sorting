@@ -34,15 +34,12 @@ body {
 }
 .topbar h1 { font-size: 16px; margin: 0; white-space: nowrap; }
 
-.path-row { display: flex; gap: 8px; flex: 1; min-width: 280px; }
-#rootInput {
-  flex: 1;
-  padding: 8px 10px;
-  background: var(--panel-2);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  color: var(--text);
-  font-size: 14px;
+.path-row { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 280px; }
+.root-label {
+  color: var(--muted);
+  font-size: 13px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  max-width: 420px;
 }
 button {
   cursor: pointer;
@@ -54,6 +51,8 @@ button {
   font-size: 14px;
 }
 button:hover { background: #41454f; }
+button.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+button.primary:hover { background: #3f7bf0; }
 button.danger { border-color: var(--trash); color: var(--trash); }
 button.danger:hover { background: rgba(255,93,93,.12); }
 
@@ -230,6 +229,24 @@ button.danger:hover { background: rgba(255,93,93,.12); }
 .modal-actions { display: flex; gap: 8px; }
 .modal-actions .keep { border-color: var(--keep); color: var(--keep); }
 .modal-actions .trash { border-color: var(--trash); color: var(--trash); }
+
+/* 非対応ブラウザ案内 */
+.unsupported {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.85);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 300; padding: 20px;
+}
+.unsupported-box {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px 32px;
+  max-width: 520px;
+  line-height: 1.7;
+}
+.unsupported-box h2 { margin-top: 0; color: var(--trash); }
+.unsupported-box strong { color: var(--accent); }
 
 /* トースト */
 .toast {

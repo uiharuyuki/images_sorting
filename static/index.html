@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>画像振り分けツール</title>
-  <link rel="stylesheet" href="/static/style.css">
+  <title>画像振り分けツール（ブラウザ版）</title>
+  <link rel="stylesheet" href="./style.css">
 </head>
 <body>
   <header class="topbar">
     <h1>画像振り分けツール</h1>
     <div class="path-row">
-      <input id="rootInput" type="text" placeholder="例: C:\Users\you\Pictures  または  /home/you/pics" autocomplete="off">
-      <button id="loadBtn">読み込み</button>
+      <button id="pickBtn" class="primary">フォルダを選択</button>
+      <span id="rootLabel" class="root-label" title="">未選択</span>
     </div>
     <div class="stats">
       <span id="statTotal">画像: 0</span>
@@ -30,7 +30,8 @@
     <main class="main">
       <div id="hint" class="hint">
         操作: クリックで拡大 / <kbd>D</kbd> 削除 / <kbd>S</kbd> 保存 /
-        <kbd>←</kbd><kbd>→</kbd> 移動 / <kbd>Z</kbd> 直前の削除を取消
+        <kbd>←</kbd><kbd>→</kbd><kbd>↑</kbd><kbd>↓</kbd> 移動 / <kbd>Z</kbd> 直前の削除を取消 /
+        <kbd>Enter</kbd> 拡大 / <kbd>Esc</kbd> 閉じる
       </div>
       <div class="filterbar" id="filterBar">
         <span class="filterbar-label">表示:</span>
@@ -40,7 +41,7 @@
         <button class="filter-btn trash" data-filter="trash">削除 <span class="fc" id="fcTrash">0</span></button>
       </div>
       <div id="grid" class="grid"></div>
-      <div id="emptyMsg" class="empty-msg hidden">画像がありません。</div>
+      <div id="emptyMsg" class="empty-msg hidden">画像がありません。「フォルダを選択」してください。</div>
     </main>
   </div>
 
@@ -59,8 +60,20 @@
     </div>
   </div>
 
+  <!-- 非対応ブラウザ案内 -->
+  <div id="unsupported" class="unsupported hidden">
+    <div class="unsupported-box">
+      <h2>このブラウザは未対応です</h2>
+      <p>
+        このツールは <strong>File System Access API</strong> を使ってフォルダを直接読み書きします。
+        お使いのブラウザはこの機能に対応していません。
+      </p>
+      <p><strong>Google Chrome</strong> または <strong>Microsoft Edge</strong>（デスクトップ版）で開いてください。</p>
+    </div>
+  </div>
+
   <div id="toast" class="toast hidden"></div>
 
-  <script src="/static/app.js"></script>
+  <script src="./app.js"></script>
 </body>
 </html>

@@ -165,6 +165,12 @@ class Handler(BaseHTTPRequestHandler):
             return self._api_list(qs)
         if path == "/img":
             return self._serve_image(qs)
+        # 静的ファイルのフォールバック（index.html が ./app.js 等の相対パスで参照するため）
+        candidate = path.lstrip("/")
+        if candidate:
+            full = os.path.realpath(os.path.join(STATIC_DIR, candidate.replace("/", os.sep)))
+            if (full == STATIC_DIR or full.startswith(STATIC_DIR + os.sep)) and os.path.isfile(full):
+                return self._serve_static(candidate)
         return self._error(404, "not found")
 
     def do_POST(self):
